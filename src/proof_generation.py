@@ -1,4 +1,4 @@
-import slm
+from . import slm
 
 def generate_basic_proof(formal_statement, model, tokenizer, temperature=1):
 	prompt = """Complete the following Lean 4 code:

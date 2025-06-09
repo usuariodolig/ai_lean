@@ -1,7 +1,7 @@
 import time
 import re
 
-import http_client, formatting
+from . import http_client, formatting
 
 def check_repl_status(server_client: http_client.LeanHTTPClient) -> tuple[bool, str]:
 	if server_client is None:

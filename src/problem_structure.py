@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
-from theorem_manager import TheoremManager, ProofStructure
+from .theorem_manager import TheoremManager, ProofStructure
 
 
 @dataclass

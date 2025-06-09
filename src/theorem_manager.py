@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Dict
 import re
 
-from formatting import Hypothesis, TheoremParser
+from .formatting import Hypothesis, TheoremParser
 
 
 @dataclass

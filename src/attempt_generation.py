@@ -1,9 +1,9 @@
 import time
 
-import checking
-from http_client import LeanHTTPClient
-from proof_generation import generate_proof, generate_proof_batch
-from problem_structure import Attempt, TheoremProcessor
+from . import checking
+from .http_client import LeanHTTPClient
+from .proof_generation import generate_proof, generate_proof_batch
+from .problem_structure import Attempt, TheoremProcessor
 
 
 def generate_attempt(formal_statement, model, tokenizer, server_client: LeanHTTPClient, proof_type='', temperature=1, cot_proof="") -> Attempt:

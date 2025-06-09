@@ -1,7 +1,7 @@
-import formatting, checking, attempt_generation
-from http_client import LeanHTTPClient
-from problem_structure import TheoremProcessor
-from theorem_manager import ProofStructure
+from . import formatting, checking, attempt_generation
+from .http_client import LeanHTTPClient
+from .problem_structure import TheoremProcessor
+from .theorem_manager import ProofStructure
   
 # Modified functions, deleted most and changed all to only work with CoT and assuming all previus (even unproven) lemmas for each next lemma, and never doing final_theorem_breakdown. If you want to go back the old file it's in '/old'
 

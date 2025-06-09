@@ -1,5 +1,3 @@
-import sys
-import os
 import json
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -36,6 +34,10 @@ if __name__ == '__main__':
 	with open('proofnet.json', 'r', encoding='utf-8') as f:
 		proofnet_test = json.load(f)
 
+	proofnet_lookup_by_statement = {problem['formal_statement']: problem for problem in proofnet_test}
+	print(len(proofnet_lookup_by_statement))
+
+
 	with open('tests/breakdown_attempts_nl_proof.json', 'r', encoding='utf-8') as f:
 		processors_nl_proof_dict = json.load(f)
 	
@@ -43,11 +45,16 @@ if __name__ == '__main__':
 		processors_vanilla_dict = json.load(f)
 	
 	processors_nl_proof = dict()
+	for processor_dict in processors_nl_proof_dict:
+		theorem_processor = TheoremProcessor.from_dict(processor_dict)
+		problem = proofnet_lookup_by_statement[theorem_processor.formal_statement]
+		processors_nl_proof[problem['name']] = theorem_processor
+
 	processors_vanilla = dict()
-	for i, problem in enumerate(proofnet_test):
-		name = problem['name']
-		processors_nl_proof[name] = TheoremProcessor.from_dict(processors_nl_proof_dict[i])
-		processors_vanilla[name] = TheoremProcessor.from_dict(processors_vanilla[i])
+	for processor_dict in processors_vanilla_dict:
+		theorem_processor = TheoremProcessor.from_dict(processor_dict)
+		problem = proofnet_lookup_by_statement[theorem_processor.formal_statement]
+		processors_vanilla[problem['name']] = theorem_processor
 	
 	i = 0
 	while True:
@@ -55,16 +62,17 @@ if __name__ == '__main__':
 		stop = True
 		print(f"============================== {i} ==============================")
 		# Part with nl proofs
-		for j, theorem_processor in enumerate(processors_nl_proof.values()[:2]): # INCORRECT
+		for j, theorem_processor in enumerate(processors_nl_proof.values()):
 			if theorem_processor.has_solution():
 				continue
-			elif theorem_processor.count_attempts() >= 16 + 4 * (1 + count_lemmas(theorem_processor)): # INCORRECT
+			elif theorem_processor.count_attempts() >= 16 + 2 * (1 + count_lemmas(theorem_processor)): # INCORRECT
 				continue
 			
 			stop = False
 			print(f"with nl_proof: {j}")
-			problem = proofnet_test[j]
+			problem = proofnet_lookup_by_statement[theorem_processor.formal_statement]
 			header = problem['header']
+			name = problem['name']
 			
 			theorem_proving.attempt_more_proofs_batch(
 				theorem_processor, model, tokenizer, None,
@@ -75,20 +83,21 @@ if __name__ == '__main__':
 				header=header
 			)
 
-			with open(f'tests/nl_proof/{problem['name']}.json', 'w', encoding='utf-8') as file:
+			with open(f'tests/nl_proof/{name}.json', 'w', encoding='utf-8') as file:
 				json.dump({problem['name'] : theorem_processor.to_dict()}, file, indent=4)
 		
 		# Part with vanilla cot
-		for j, theorem_processor in enumerate(processors_vanilla.values()[:2]):
+		for j, theorem_processor in enumerate(processors_vanilla.values()):
 			if theorem_processor.has_solution():
 				continue
-			elif theorem_processor.count_attempts() >= 16 + 4 * (1 + count_lemmas(theorem_processor)):
+			elif theorem_processor.count_attempts() >= 16 + 2 * (1 + count_lemmas(theorem_processor)): # WRONG
 				continue
 			
 			stop = False
 			print(f"vanilla cot  : {j}")
-			problem = proofnet_test[j]
+			problem = proofnet_lookup_by_statement[theorem_processor.formal_statement]
 			header = problem['header']
+			name = problem['name']
 			
 			theorem_proving.attempt_more_proofs_batch(
 				theorem_processor, model, tokenizer, None,
@@ -99,10 +108,8 @@ if __name__ == '__main__':
 				header=header
 			)
 
-			with open(f'tests/vanilla/{problem['name']}.json', 'w', encoding='utf-8') as file:
+			with open(f'tests/vanilla/{name}.json', 'w', encoding='utf-8') as file:
 				json.dump({problem['name'] : theorem_processor.to_dict()}, file, indent=4)
 		
 		if stop:
 			break
-		
-# IT'S MOSTLY RIGHT YOU JUST NEED TO ADD SAVING PER PROBLEM
