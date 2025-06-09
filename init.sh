@@ -8,7 +8,7 @@ set -e
 
 # Install required Python packages
 python -m pip install --upgrade pip
-pip install --upgrade torch accelerate transformers openai matplotlib google-genai
+pip install --upgrade torch accelerate transformers
 
 # Configure git
 git config --global user.name "usuariodolig"
