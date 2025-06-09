@@ -65,7 +65,7 @@ if __name__ == '__main__':
 		for j, theorem_processor in enumerate(processors_nl_proof.values()):
 			if theorem_processor.has_solution():
 				continue
-			elif theorem_processor.count_attempts() >= 16 + 112 * (1 + count_lemmas(theorem_processor)): # INCORRECT
+			elif theorem_processor.count_attempts() >= 16 + 112 * (1 + count_lemmas(theorem_processor)):
 				continue
 			
 			stop = False
@@ -74,23 +74,26 @@ if __name__ == '__main__':
 			header = problem['header']
 			name = problem['name']
 			
-			theorem_proving.attempt_more_proofs_batch(
-				theorem_processor, model, tokenizer, None,
-				n_initial_breakdown_attempts=BATCH_SIZE,
-				n_attempts_per_lemma=BATCH_SIZE,
-				use_llm_cot=True,
-				cot_proof=theorem_processor.informal_proof,
-				header=header
-			)
+			try: 
+				theorem_proving.attempt_more_proofs_batch(
+					theorem_processor, model, tokenizer, None,
+					n_initial_breakdown_attempts=BATCH_SIZE,
+					n_attempts_per_lemma=BATCH_SIZE,
+					use_llm_cot=True,
+					cot_proof=theorem_processor.informal_proof,
+					header=header
+				)
 
-			with open(f'tests/nl_proof/{name}.json', 'w', encoding='utf-8') as file:
-				json.dump({problem['name'] : theorem_processor.to_dict()}, file, indent=4)
+				with open(f'tests/nl_proof/{name}.json', 'w', encoding='utf-8') as file:
+					json.dump({problem['name'] : theorem_processor.to_dict()}, file, indent=4)
+			except Exception as e:
+				print("ERROR: ", e)
 		
 		# Part with vanilla cot
 		for j, theorem_processor in enumerate(processors_vanilla.values()):
 			if theorem_processor.has_solution():
 				continue
-			elif theorem_processor.count_attempts() >= 16 + 112 * (1 + count_lemmas(theorem_processor)): # WRONG
+			elif theorem_processor.count_attempts() >= 16 + 112 * (1 + count_lemmas(theorem_processor)): 
 				continue
 			
 			stop = False
@@ -99,17 +102,20 @@ if __name__ == '__main__':
 			header = problem['header']
 			name = problem['name']
 			
-			theorem_proving.attempt_more_proofs_batch(
-				theorem_processor, model, tokenizer, None,
-				n_initial_breakdown_attempts=BATCH_SIZE,
-				n_attempts_per_lemma=BATCH_SIZE,
-				use_llm_cot=False,
-				cot_proof="",
-				header=header
-			)
+			try:
+				theorem_proving.attempt_more_proofs_batch(
+					theorem_processor, model, tokenizer, None,
+					n_initial_breakdown_attempts=BATCH_SIZE,
+					n_attempts_per_lemma=BATCH_SIZE,
+					use_llm_cot=False,
+					cot_proof="",
+					header=header
+				)
 
-			with open(f'tests/vanilla/{name}.json', 'w', encoding='utf-8') as file:
-				json.dump({problem['name'] : theorem_processor.to_dict()}, file, indent=4)
+				with open(f'tests/vanilla/{name}.json', 'w', encoding='utf-8') as file:
+					json.dump({problem['name'] : theorem_processor.to_dict()}, file, indent=4)
+			except Exception as e:
+				print("ERROR: ", e)
 		
 		if stop:
 			break
