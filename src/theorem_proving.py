@@ -207,6 +207,8 @@ def attempt_theorem_breakdown_proof_batch_no_checking(
 	use_llm_cot=True,
 	header=""
 ):
+	if not theorem_processor.breakdown_attempts:
+		return
 	breakdown_attempt = theorem_processor.breakdown_attempts[0]
 	# NOTE: Assuming generate_..._batch functions will correctly handle server_client=None 
 	# by skipping the verification step.
@@ -264,7 +266,8 @@ def attempt_more_proofs_batch(
 		use_llm_cot=use_llm_cot,
 		header=header,
 	)
-
+	if not theorem_processor.breakdown_attempts:
+		return
 	breakdown_attempt = theorem_processor.breakdown_attempts[0]
 
 	# Add proof to problem (if present)

@@ -12,7 +12,7 @@ def count_lemmas(processor: TheoremProcessor) -> int:
 	lemmas = processor.breakdown_attempts[0].lemmas
 	return len(lemmas)
 
-BATCH_SIZE = 2
+BATCH_SIZE = 32
 
 if __name__ == '__main__':
 	# Model initialization
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 		for j, theorem_processor in enumerate(processors_nl_proof.values()):
 			if theorem_processor.has_solution():
 				continue
-			elif theorem_processor.count_attempts() >= 16 + 2 * (1 + count_lemmas(theorem_processor)): # INCORRECT
+			elif theorem_processor.count_attempts() >= 16 + 112 * (1 + count_lemmas(theorem_processor)): # INCORRECT
 				continue
 			
 			stop = False
@@ -90,7 +90,7 @@ if __name__ == '__main__':
 		for j, theorem_processor in enumerate(processors_vanilla.values()):
 			if theorem_processor.has_solution():
 				continue
-			elif theorem_processor.count_attempts() >= 16 + 2 * (1 + count_lemmas(theorem_processor)): # WRONG
+			elif theorem_processor.count_attempts() >= 16 + 112 * (1 + count_lemmas(theorem_processor)): # WRONG
 				continue
 			
 			stop = False
